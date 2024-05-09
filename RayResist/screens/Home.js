@@ -149,13 +149,13 @@ const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.iconButton}>
                     <FontAwesome name="home" size={24} color="black" /><Text>Home</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { navigation.navigate("learn") }}
+                <TouchableOpacity onPress={() => { navigation.navigate("Learn") }}
                     style={styles.iconButton}>
                     <Foundation name="lightbulb" size={24} color="black" />
                     <Text>Learn</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => { navigation.navigate("profile") }}
+                <TouchableOpacity onPress={() => { navigation.navigate("Profile") }}
                     style={styles.iconButton}>
                     <MaterialCommunityIcons name="face-man-profile" size={24} color="black" /><Text>Profile</Text>
                 </TouchableOpacity>

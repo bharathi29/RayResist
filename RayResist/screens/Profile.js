@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
-import Btn from './Btn';
+import Btn from '../modules/Btn';
 
 const Profile = (props) => {
   return (
