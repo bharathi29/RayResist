@@ -62,57 +62,17 @@ const HomeScreen = ({ navigation }) => {
 
     const toggleTimer = async () => {
         setIsActive(!isActive);
-        if (!showTimer) {
-            setShowTimer(true);
-            /*const db = firebase.firestore();
-            const countRef = db.collection('timerCount').doc('clickCount');
-            await db.runTransaction(async (transaction) => {
-                const doc = await transaction.get(countRef);
-                let count = doc.exists ? doc.data().count + 1 : 1;
-                transaction.set(countRef, { count });
-            });*/
-
-            const now = new Date();
-            const ti=firebase.firestore().collection('timerData');
-            await ti.add({
-                startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                startDate: now.getDate(),
-                startMonth: now.getMonth() + 1, // Months are zero-based, so add 1
-                startHour: now.getHours(),
-                isActive: true
-            });
-            /*db.collection('timerData').add({
-                startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                startDate: now.getDate(),
-                startMonth: now.getMonth() + 1, // Months are zero-based, so add 1
-                startHour: now.getHours(),
-                isActive: true // Add a field to indicate if the timer is active
-            });*/
-        } /*else {
-            const db = firebase.firestore();
-            const now = new Date();
-            const querySnapshot = await db.collection('timerData')
-                .where('isActive', '==', true)
-                .get();
-            querySnapshot.forEach((doc) => {
-                const docData = doc.data();
-                const docId = doc.id;
-                db.collection('timerData').doc(docId).update({
-                    endTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    endDate: now.getDate(),
-                    endMonth: now.getMonth() + 1, // Months are zero-based, so add 1
-                    endHour: now.getHours(),
-                    isActive: false // Set isActive to false when stopping the timer
-                });
-            });
-            setShowTimer(false);
-        }*/
     }
 
     const resetTimer = () => {
         setRemainingSecs(0);
         setIsActive(false);
         setShowTimer(false);
+    }
+
+    const applyTimer = () => {
+        setShowTimer(true);
+        setIsActive(true);
     }
 
     useEffect(() => {
@@ -132,11 +92,6 @@ const HomeScreen = ({ navigation }) => {
         }
         return () => clearInterval(interval);
     }, [isActive, remainingSecs]);
-
-    const applyTimer = () => {
-        setShowTimer(true);
-        setIsActive(true);
-    }
 
     return (
         <View style={styles.container}>
