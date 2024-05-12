@@ -5,7 +5,6 @@ import Btn from '../modules/Btn';
 import Field from '../modules/Field';
 
 const Login = ({ navigation,route }) => {
-  const name=route.params.name;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,7 +14,7 @@ const Login = ({ navigation,route }) => {
         // Login successful
         alert('Login successful');
         // Navigate to the desired screen
-        navigation.navigate('Home',{email:email,name:name});
+        navigation.navigate('Home',{email:email});
       })
       .catch((error) => {
         const errorMessage = error.message;

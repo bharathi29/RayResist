@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import Btn from '../modules/Btn';
-
 const Profile = (props) => {
   return (
       <View style={{ marginHorizontal: 40, marginVertical: 100 }}>
@@ -12,7 +11,5 @@ const Profile = (props) => {
       </View>
   );
 }
-
 const styles = StyleSheet.create({})
-
 export default Profile;

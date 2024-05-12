@@ -23,7 +23,7 @@ const LearnScreen = ({ navigation, route }) => {
             <Text>{'\n'}{'\n'}</Text>
             <Text>{'\n'}{'\n'}</Text>
             <Text>{'\n'}{'\n'}</Text>
-            <Text>{'\n'}</Text>
+            <Text>{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</Text>
             <View style={styles.iconContainer}>
                 <TouchableOpacity onPress={() => { navigation.navigate("Home") }}
                 style={styles.iconButton}>
@@ -35,7 +35,7 @@ const LearnScreen = ({ navigation, route }) => {
                     <Text>Learn</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => { navigation.navigate("Profile") }}
+                <TouchableOpacity onPress={() => { navigation.navigate("Data") }}
                     style={styles.iconButton}>
                     <MaterialCommunityIcons name="face-man-profile" size={24} color="black" /><Text>Profile</Text>
                 </TouchableOpacity>

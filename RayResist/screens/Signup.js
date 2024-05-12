@@ -15,14 +15,14 @@ const Signup = ({ navigation }) => {
       .then((userCredential) => {
         const user = userCredential.user;
         // Store additional user information in Firestore
-        firebase.firestore().collection('users').doc(user.uid).set({
+        firebase.firestore().collection('users').doc(email).set({
           name,
           email,
           contactNumber,
         })
         .then(() => {
           alert('Account created');
-          navigation.navigate('Login',{name:name});
+          navigation.navigate('Login');
         })
         .catch((error) => {
           console.error('Error adding document: ', error);

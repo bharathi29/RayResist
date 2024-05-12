@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import { firebase } from '../config';
 
 const openWeatherKey = 'a540b4e2abe5bef38f4997518ab068e3';
 
@@ -46,15 +47,6 @@ const HomeScreen = ({ navigation }) => {
             console.log('UV Index Data:', uvData);
 
             setUVIndex(uvData.value);
-
-            const db = firebase.firestore();
-            db.collection('uvIndexData').add({
-                latitude: latitude,
-                longitude: longitude,
-                uvIndex: uvData.value,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -68,11 +60,53 @@ const HomeScreen = ({ navigation }) => {
         return { mins: formatNumber(mins), secs: formatNumber(secs) };
     }
 
-    const toggleTimer = () => {
+    const toggleTimer = async () => {
         setIsActive(!isActive);
         if (!showTimer) {
             setShowTimer(true);
-        }
+            /*const db = firebase.firestore();
+            const countRef = db.collection('timerCount').doc('clickCount');
+            await db.runTransaction(async (transaction) => {
+                const doc = await transaction.get(countRef);
+                let count = doc.exists ? doc.data().count + 1 : 1;
+                transaction.set(countRef, { count });
+            });*/
+
+            const now = new Date();
+            const ti=firebase.firestore().collection('timerData');
+            await ti.add({
+                startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                startDate: now.getDate(),
+                startMonth: now.getMonth() + 1, // Months are zero-based, so add 1
+                startHour: now.getHours(),
+                isActive: true
+            });
+            /*db.collection('timerData').add({
+                startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                startDate: now.getDate(),
+                startMonth: now.getMonth() + 1, // Months are zero-based, so add 1
+                startHour: now.getHours(),
+                isActive: true // Add a field to indicate if the timer is active
+            });*/
+        } /*else {
+            const db = firebase.firestore();
+            const now = new Date();
+            const querySnapshot = await db.collection('timerData')
+                .where('isActive', '==', true)
+                .get();
+            querySnapshot.forEach((doc) => {
+                const docData = doc.data();
+                const docId = doc.id;
+                db.collection('timerData').doc(docId).update({
+                    endTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    endDate: now.getDate(),
+                    endMonth: now.getMonth() + 1, // Months are zero-based, so add 1
+                    endHour: now.getHours(),
+                    isActive: false // Set isActive to false when stopping the timer
+                });
+            });
+            setShowTimer(false);
+        }*/
     }
 
     const resetTimer = () => {
@@ -155,7 +189,7 @@ const HomeScreen = ({ navigation }) => {
                     <Text>Learn</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => { navigation.navigate("Profile") }}
+                <TouchableOpacity onPress={() => { navigation.navigate("Data") }}
                     style={styles.iconButton}>
                     <MaterialCommunityIcons name="face-man-profile" size={24} color="black" /><Text>Profile</Text>
                 </TouchableOpacity>
@@ -244,4 +278,3 @@ const styles = StyleSheet.create({
         color: "#FF851B"
     }
 });
-
