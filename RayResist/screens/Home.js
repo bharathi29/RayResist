@@ -13,9 +13,18 @@ const HomeScreen = ({ navigation }) => {
     const [remainingSecs, setRemainingSecs] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
+    const [email, setEmail] = useState('');
 
     useEffect(() => {
         fetchWeatherAndUVIndexForCurrentLocation();
+        const fetchEmail = async () => {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                setEmail(user.email);
+            }
+        };
+
+        fetchEmail();
     }, []);
 
     const fetchWeatherAndUVIndexForCurrentLocation = async () => {
@@ -25,10 +34,8 @@ const HomeScreen = ({ navigation }) => {
                 console.log('Location permission denied');
                 return;
             }
-
             const location = await Location.getCurrentPositionAsync({});
             const { latitude, longitude } = location.coords;
-
             const weatherResponse = await fetch(
                 `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherKey}&units=metric`
             );
@@ -60,10 +67,6 @@ const HomeScreen = ({ navigation }) => {
         return { mins: formatNumber(mins), secs: formatNumber(secs) };
     }
 
-    const toggleTimer = async () => {
-        setIsActive(!isActive);
-    }
-
     const resetTimer = () => {
         setRemainingSecs(0);
         setIsActive(false);
@@ -73,7 +76,62 @@ const HomeScreen = ({ navigation }) => {
     const applyTimer = () => {
         setShowTimer(true);
         setIsActive(true);
+        incrementDuration();
     }
+
+    const incrementDuration = async () => {
+        const now = new Date();
+        const date = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`; // Format: DD-MM-YYYY
+        const userRef = firebase.firestore().collection('users').doc(email);
+
+        await userRef.update({
+            [`datedate.${date}`]: firebase.firestore.FieldValue.increment(1)
+        });
+    }
+
+    const handleTimer = async () => {
+        if (!showTimer) {
+            setShowTimer(true);
+            setIsActive(true);
+            const now = new Date();
+            const date = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`; // Format: DD-MM-YYYY
+
+            const userRef = firebase.firestore().collection('users').doc(email);
+            const userDoc = await userRef.get();
+
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                if (userData.datedate && userData.datedate[date]) {
+                    await userRef.update({
+                        [`datedate.${date}`]: firebase.firestore.FieldValue.increment(1),
+                        startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        isActive: true,
+                    });
+                } else {
+                    // Append the date to the datedate object
+                    await userRef.update({
+                        [`datedate.${date}`]: 1 // Initialize duration to 0
+                    });
+                }
+            } else {
+                // Create a new document for the user
+                await userRef.set({
+                    datedate: {
+                        [date]: 0 // Initialize duration to 0
+                    },
+                    startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    startDate: now.getDate(),
+                    startMonth: now.getMonth() + 1,
+                    startHour: now.getHours(),
+                    isActive: true,
+                });
+            }
+        } else if (isActive) {
+            setIsActive(false);
+            setShowTimer(false);
+            setRemainingSecs(0);
+        }
+    };
 
     useEffect(() => {
         let interval = null;
@@ -115,20 +173,15 @@ const HomeScreen = ({ navigation }) => {
                 )}
             </View>
 
-            {!showTimer && (
-                <TouchableOpacity style={styles.roundButton} onPress={applyTimer}>
-                    <Text style={styles.buttonText}>APPLY</Text>
-                </TouchableOpacity>
-            )}
+            <TouchableOpacity onPress={handleTimer} style={styles.roundButton}>
+                <Text style={styles.buttonTextStyle}>{showTimer && !isActive ? 'Reset' : 'Apply'}</Text>
+            </TouchableOpacity>
 
             {showTimer && (
                 <>
                     <Text style={styles.timerText}>{`${getRemaining(remainingSecs).mins}:${getRemaining(remainingSecs).secs}`}</Text>
-                    <TouchableOpacity onPress={toggleTimer} style={styles.button}>
-                        <Text style={styles.buttonText}>{isActive ? 'Pause' : 'Start'}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={resetTimer} style={[styles.button, styles.buttonReset]}>
-                        <Text style={[styles.buttonText, styles.buttonTextReset]}>Reset</Text>
+                    <TouchableOpacity onPress={handleTimer} style={[styles.button, { backgroundColor: isActive ? '#FF5733' : '#61210F' }]}>
+                        <Text style={styles.buttonTextStyle}>{isActive ? 'Pause' : 'Start'}</Text>
                     </TouchableOpacity>
                 </>
             )}
