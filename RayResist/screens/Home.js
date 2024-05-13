@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { FontAwesome, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { firebase } from '../config';
+import { BarChart } from 'react-native-chart-kit';
 
 const openWeatherKey = 'a540b4e2abe5bef38f4997518ab068e3';
 
@@ -14,6 +15,7 @@ const HomeScreen = ({ navigation }) => {
     const [isActive, setIsActive] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
     const [email, setEmail] = useState('');
+    const [datedateData, setDatedateData] = useState(null);
 
     useEffect(() => {
         fetchWeatherAndUVIndexForCurrentLocation();
@@ -21,6 +23,12 @@ const HomeScreen = ({ navigation }) => {
             const user = firebase.auth().currentUser;
             if (user) {
                 setEmail(user.email);
+                const userRef = firebase.firestore().collection('users').doc(user.email);
+                const userDoc = await userRef.get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    setDatedateData(userData.datedate);
+                }
             }
         };
 
@@ -67,18 +75,6 @@ const HomeScreen = ({ navigation }) => {
         return { mins: formatNumber(mins), secs: formatNumber(secs) };
     }
 
-    const resetTimer = () => {
-        setRemainingSecs(0);
-        setIsActive(false);
-        setShowTimer(false);
-    }
-
-    const applyTimer = () => {
-        setShowTimer(true);
-        setIsActive(true);
-        incrementDuration();
-    }
-
     const incrementDuration = async () => {
         const now = new Date();
         const date = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`; // Format: DD-MM-YYYY
@@ -86,7 +82,7 @@ const HomeScreen = ({ navigation }) => {
 
         await userRef.update({
             [`datedate.${date}`]: firebase.firestore.FieldValue.increment(1)
-        });
+        })
     }
 
     const handleTimer = async () => {
