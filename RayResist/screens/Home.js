@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import { FontAwesome, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { firebase } from '../config';
-import { BarChart } from 'react-native-chart-kit';
 
 const openWeatherKey = 'a540b4e2abe5bef38f4997518ab068e3';
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet,TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const LearnScreen = ({ navigation, route }) => {
+const LearnScreen = ({ navigation }) => {
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <Text>{'\n'}</Text>
             <Text style={styles.title}>Sunscreen Education</Text>
             <Text style={styles.subtitle}>Why Sunscreen is Important:</Text>
@@ -19,14 +19,13 @@ const LearnScreen = ({ navigation, route }) => {
             <Text style={styles.textd}>- Seek shade, especially during peak sun hours (10am-4pm)</Text>
             <Text style={styles.textd}>- Wear protective clothing, sunglasses, and a wide-brimmed hat</Text>
             <Text style={styles.textd}>- Avoid tanning beds and sunlamps</Text>
-            <Text>{'\n'}{'\n'}</Text>
-            <Text>{'\n'}{'\n'}</Text>
-            <Text>{'\n'}{'\n'}</Text>
-            <Text>{'\n'}{'\n'}</Text>
-            <Text>{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</Text>
+ 
+            <Text>{'\n'}{'\n'}{'\n'}</Text>
+            <Text>{'\n'}</Text>
+            <Text>{'\n'}</Text><Text>{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}{'\n'}</Text>
             <View style={styles.iconContainer}>
                 <TouchableOpacity onPress={() => { navigation.navigate("Home") }}
-                style={styles.iconButton}>
+                    style={styles.iconButton}>
                     <FontAwesome name="home" size={24} color="black" /><Text>Home</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => { navigation.navigate("Learn") }}
@@ -40,7 +39,7 @@ const LearnScreen = ({ navigation, route }) => {
                     <MaterialCommunityIcons name="face-man-profile" size={24} color="black" /><Text>Profile</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -48,7 +47,6 @@ export default LearnScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         padding: 20,
         backgroundColor: '#fff',
     },
@@ -77,7 +75,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     textd: {
-        fontSize: 16, // Adjust the font size as needed
-        marginBottom: 5, // Add some spacing between each text
+        fontSize: 16,
+        marginBottom: 5,
     },
 });

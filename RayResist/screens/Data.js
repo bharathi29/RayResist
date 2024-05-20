@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Button, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Button, TextInput, Alert, ScrollView } from 'react-native';
 import { FontAwesome, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import { firebase } from '../config';
 import { BarChart } from 'react-native-chart-kit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Data = ({ navigation }) => {
   const [email, setEmail] = useState('');
+  const [password,setPassword]=useState('');
   const [datedateData, setDatedateData] = useState(null);
   const [text, setText] = useState('');
 
@@ -29,7 +31,9 @@ const Data = ({ navigation }) => {
   // Sort the datedateData object by keys (dates) in ascending order
   const sortedData = datedateData
     ? Object.keys(datedateData).sort((a, b) => new Date(a) - new Date(b)).reduce((obj, key) => {
-        obj[key] = datedateData[key];
+        if (!obj[key]) {
+          obj[key] = datedateData[key];
+        }
         return obj;
       }, {})
     : null;
@@ -56,11 +60,25 @@ const Data = ({ navigation }) => {
     });
   };
 
+
+  const logOut=async()=>{
+    const e=await AsyncStorage.removeItem('email')
+    const p=await AsyncStorage.removeItem('password')
+    navigation.navigate("Login")
+    /*if(!e && !p){
+      //alert("Logged out successfully")
+      navigation.navigate("Login")
+    }*/
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={{ marginHorizontal: 40, marginVertical: 100 }}>
         <Text style={{ color: 'magenta', fontSize: 30 }}>Hello {'\n'}{email}!</Text>
       </View>
+      <Text>
+        WELCOME TO BLOG
+      </Text>
       <TextInput
         placeholder="Enter post text"
         value={text}
@@ -68,10 +86,8 @@ const Data = ({ navigation }) => {
         style={styles.textInput}
         multiline={true}
       />
-      <Button title="Submit Post" onPress={handlePostSubmit} />
-      <Text>{'\n'}{'\n'}</Text>
-      <Text>{'\n'}{'\n'}</Text>
-      <Text>{'\n'}{'\n'}</Text>
+      <Button title="Submit Post" onPress={handlePostSubmit} /><Text>{'\n'}</Text>
+      <Button title="Logout" onPress={()=>{logOut()}}/>
       <Text>{'\n'}{'\n'}</Text>
       <Text>{'\n'}{'\n'}</Text>
       {sortedData && (
@@ -108,11 +124,11 @@ const Data = ({ navigation }) => {
             borderRadius: 16,
           }}
         />
+        
       )}
 
       
-
-      <Text>{'\n'}</Text>
+      
       <View style={styles.iconContainer}>
         <TouchableOpacity onPress={() => { navigation.navigate("Home"); } } style={styles.iconButton}>
           <FontAwesome name="home" size={24} color="black" /><Text>Home</Text>
@@ -124,13 +140,13 @@ const Data = ({ navigation }) => {
           <MaterialCommunityIcons name="face-man-profile" size={24} color="black" /><Text>Profile</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
